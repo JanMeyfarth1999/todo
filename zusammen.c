@@ -22,7 +22,7 @@ FILE *oeffneDatei(char *dateiname, char *modus)
 int zeigeListe()
 {
     FILE *datei;
-    char zeile[256];
+    char *zeile;
     int zeilenNummer = 0;
 
     datei = oeffneDatei("todo.txt", "r");
@@ -31,10 +31,13 @@ int zeigeListe()
         printf("Datei konnte nicht geöffnet werden !\n");
         return 0;
     }
-    while (fgets(zeile, 256, datei) != NULL)
+    zeile = leseZeile(datei);
+    while (zeile != NULL)
     {
         zeilenNummer++;
-        printf("%d: %s", zeilenNummer, zeile);
+        printf("%d: %s\n", zeilenNummer, zeile);
+        free(zeile);
+        zeile = leseZeile(datei);
     }
     fclose(datei);
     return 1;
@@ -43,6 +46,7 @@ int zeigeListe()
 char *leseZeile(FILE *datei)
 {
     char *zeile;
+    char *temp;
     int groesse = 64;
     int laenge = 0;
     int zeichen;
@@ -53,11 +57,48 @@ char *leseZeile(FILE *datei)
         return NULL;
     }
     zeichen = fgetc(datei);
+    if (zeichen == EOF)
+    {
+        free(zeile);
+        return NULL;
+    }
     while (zeichen != '\n' && zeichen != EOF)
     {
+        if (laenge == groesse)
+        {
+            groesse = groesse * 2;
+            temp = realloc(zeile, groesse * sizeof(char));
+
+            if (temp == NULL)
+            {
+                free(zeile);
+                printf("Speicher konnte nicht erweitert werden!\n");
+                return NULL;
+            }
+
+            zeile = temp;
+        }
+
         zeile[laenge] = zeichen;
         laenge++;
+        zeichen = fgetc(datei);
     }
+
+    if (laenge == groesse)
+    {
+        groesse = groesse + 1;
+        temp = realloc(zeile, groesse * sizeof(char));
+
+        if (temp == NULL)
+        {
+            free(zeile);
+            printf("Speicher konnte nicht erweitert werden!\n");
+            return NULL;
+        }
+        zeile = temp;
+    }
+    zeile[laenge] = '\0';
+    return zeile;
 }
 
 int loescheItem(long itemNummer)
