@@ -228,13 +228,53 @@ int aendereStatus(long itemNummer, int erledigt)
     }
     return 1;
 }
+int aendereText(long itemNummer, char *neuerText)
+{
+    FILE *datei, *tempDatei;
+    char *zeile;
+    int zeilenNummer = 0;
+    int gefunden = 0;
+
+    datei = oeffneDatei("todo.txt", "r");
+    if (datei == NULL)
+    {
+        printf("Datei konnte nicht geöffnet werden !\n");
+        return 0;
+    }
+    tempDatei = oeffneDatei("temp.txt", "w");
+    if (tempDatei == NULL)
+    {
+        fclose(datei);
+        return 0;
+    }
+    zeile = leseZeile(datei);
+    while (zeile != NULL)
+    {
+        zeilenNummer++;
+
+        if (zeilenNummer == itemNummer)
+        {
+            gefunden = 1;
+            fprintf(tempDatei, "%s\n", neuerText);
+        }
+
+        if (zeilenNummer != itemNummer)
+        {
+            fprintf(tempDatei, "%s\n", zeile);
+        }
+        free(zeile);
+        zeile = leseZeile(datei);
+    }
+    fclose(datei);
+    fclose(tempDatei);
+}
 
 int main(int argc, char *argv[])
 {
     int options;
     long itemNummer;
     FILE *datei;
-    while ((options = getopt(argc, argv, ":hla:d:c:u:")) != -1)
+    while ((options = getopt(argc, argv, ":hla:d:c:u:e:")) != -1)
     {
 
         switch (options)
