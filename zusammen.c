@@ -19,30 +19,6 @@ FILE *oeffneDatei(char *dateiname, char *modus)
     return fopen(dateiname, modus);
 }
 
-int zeigeListe()
-{
-    FILE *datei;
-    char *zeile;
-    int zeilenNummer = 0;
-
-    datei = oeffneDatei("todo.txt", "r");
-    if (datei == NULL)
-    {
-        printf("Datei konnte nicht geöffnet werden !\n");
-        return 0;
-    }
-    zeile = leseZeile(datei);
-    while (zeile != NULL)
-    {
-        zeilenNummer++;
-        printf("%d: %s\n", zeilenNummer, zeile);
-        free(zeile);
-        zeile = leseZeile(datei);
-    }
-    fclose(datei);
-    return 1;
-}
-
 char *leseZeile(FILE *datei)
 {
     char *zeile;
@@ -101,10 +77,34 @@ char *leseZeile(FILE *datei)
     return zeile;
 }
 
+int zeigeListe()
+{
+    FILE *datei;
+    char *zeile;
+    int zeilenNummer = 0;
+
+    datei = oeffneDatei("todo.txt", "r");
+    if (datei == NULL)
+    {
+        printf("Datei konnte nicht geöffnet werden !\n");
+        return 0;
+    }
+    zeile = leseZeile(datei);
+    while (zeile != NULL)
+    {
+        zeilenNummer++;
+        printf("%d: %s\n", zeilenNummer, zeile);
+        free(zeile);
+        zeile = leseZeile(datei);
+    }
+    fclose(datei);
+    return 1;
+}
+
 int loescheItem(long itemNummer)
 {
     FILE *datei, *tempDatei;
-    char zeile[256];
+    char *zeile;
     int zeilenNummer = 0;
     int gefunden = 0;
 
@@ -122,7 +122,8 @@ int loescheItem(long itemNummer)
         fclose(datei);
         return 0;
     }
-    while (fgets(zeile, 256, datei) != NULL)
+    zeile = leseZeile(datei);
+    while (zeile != NULL)
     {
         zeilenNummer++;
 
@@ -133,8 +134,10 @@ int loescheItem(long itemNummer)
 
         if (zeilenNummer != itemNummer)
         {
-            fprintf(tempDatei, "%s", zeile);
+            fprintf(tempDatei, "%s\n", zeile);
         }
+        free(zeile);
+        zeile = leseZeile(datei);
     }
     fclose(datei);
     fclose(tempDatei);
@@ -154,7 +157,7 @@ int loescheItem(long itemNummer)
 int aendereStatus(long itemNummer, int erledigt)
 {
     FILE *datei, *tempDatei;
-    char zeile[256];
+    char *zeile;
     int zeilenNummer = 0;
     int gefunden = 0;
 
@@ -173,7 +176,8 @@ int aendereStatus(long itemNummer, int erledigt)
         fclose(datei);
         return 0;
     }
-    while (fgets(zeile, 256, datei) != NULL)
+    zeile = leseZeile(datei);
+    while (zeile != NULL)
     {
         zeilenNummer++;
 
@@ -183,24 +187,26 @@ int aendereStatus(long itemNummer, int erledigt)
 
             if (erledigt == 1)
             {
-                fprintf(tempDatei, "[ERLEDIGT] %s", zeile);
+                fprintf(tempDatei, "[ERLEDIGT] %s\n", zeile);
             }
             else
             {
                 if (strncmp(zeile, "[ERLEDIGT] ", 11) == 0)
                 {
-                    fprintf(tempDatei, "%s", zeile + 11);
+                    fprintf(tempDatei, "%s\n", zeile + 11);
                 }
                 else
                 {
-                    fprintf(tempDatei, "%s", zeile);
+                    fprintf(tempDatei, "%s\n", zeile);
                 }
             }
         }
         else
         {
-            fprintf(tempDatei, "%s", zeile);
+            fprintf(tempDatei, "%s\n", zeile);
         }
+        free(zeile);
+        zeile = leseZeile(datei);
     }
     fclose(datei);
     fclose(tempDatei);
@@ -228,9 +234,6 @@ int main(int argc, char *argv[])
     int options;
     long itemNummer;
     FILE *datei;
-    // Lässt nur meinen default als fehler auswerfen und lässt
-    // die Fehlermeldung von getopt() nicht mehr auswerfen:
-    opterr = 0;
     while ((options = getopt(argc, argv, ":hla:d:c:u:")) != -1)
     {
 
