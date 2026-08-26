@@ -19,6 +19,47 @@ FILE *oeffneDatei(char *dateiname, char *modus)
     return fopen(dateiname, modus);
 }
 
+int zeigeListe()
+{
+    FILE *datei;
+    char zeile[256];
+    int zeilenNummer = 0;
+
+    datei = oeffneDatei("todo.txt", "r");
+    if (datei == NULL)
+    {
+        printf("Datei konnte nicht geöffnet werden !\n");
+        return 0;
+    }
+    while (fgets(zeile, 256, datei) != NULL)
+    {
+        zeilenNummer++;
+        printf("%d: %s", zeilenNummer, zeile);
+    }
+    fclose(datei);
+    return 1;
+}
+
+char *leseZeile(FILE *datei)
+{
+    char *zeile;
+    int groesse = 64;
+    int laenge = 0;
+    int zeichen;
+    zeile = malloc(64 * sizeof(char));
+    if (zeile == NULL)
+    {
+        printf("Speicher kann nicht reserviert werden !\n");
+        return NULL;
+    }
+    zeichen = fgetc(datei);
+    while (zeichen != '\n' && zeichen != EOF)
+    {
+        zeile[laenge] = zeichen;
+        laenge++;
+    }
+}
+
 int loescheItem(long itemNummer)
 {
     FILE *datei, *tempDatei;
@@ -144,12 +185,8 @@ int aendereStatus(long itemNummer, int erledigt)
 int main(int argc, char *argv[])
 {
     int options;
-    int gefunden;
     long itemNummer;
-    char zeile[256];
-    int zeilenNummer = 0;
     FILE *datei;
-    FILE *tempDatei;
     // Lässt nur meinen default als fehler auswerfen und lässt
     // die Fehlermeldung von getopt() nicht mehr auswerfen:
     opterr = 0;
@@ -175,18 +212,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'l':
-            datei = oeffneDatei("todo.txt", "r");
-            if (datei == NULL)
-            {
-                printf("Es befinden sich aktuell keine Aufgaben im Ordner 'todo.txt' !");
-                return 1;
-            }
-            while (fgets(zeile, 256, datei) != NULL)
-            {
-                zeilenNummer++;
-                printf("%d: %s", zeilenNummer, zeile);
-            }
-            fclose(datei);
+            zeigeListe();
             break;
 
         case 'a':
@@ -209,7 +235,6 @@ int main(int argc, char *argv[])
             }
             loescheItem(itemNummer);
             break;
-         
 
         case 'c':
 
