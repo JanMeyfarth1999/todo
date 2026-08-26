@@ -271,6 +271,19 @@ int main(int argc, char *argv[])
             printf("Neue Aufgabe: %s\n", optarg);
             break;
 
+        case 'e':
+            if (optind >= argc)
+            {
+                printf("Item-Nummer fehlt!\n");
+                break;
+            }
+
+            if (istGueltigeNummer(argv[optind], &itemNummer) == 0)
+            {
+                printf("Ungültige Item-Nummer!\n");
+                break;
+            }
+
         case 'd':
             if (istGueltigeNummer(optarg, &itemNummer) == 0)
             {
