@@ -48,7 +48,7 @@ char *leseZeile(FILE *datei)
             if (temp == NULL)
             {
                 free(zeile);
-                printf("Speicher konnte nicht erweitert werden!\n");
+                printf("Speicher konnte nicht erweitert werden !\n");
                 return NULL;
             }
 
@@ -68,7 +68,7 @@ char *leseZeile(FILE *datei)
         if (temp == NULL)
         {
             free(zeile);
-            printf("Speicher konnte nicht erweitert werden!\n");
+            printf("Speicher konnte nicht erweitert werden !\n");
             return NULL;
         }
         zeile = temp;
@@ -77,7 +77,7 @@ char *leseZeile(FILE *datei)
     return zeile;
 }
 
-int zeigeListe()
+int zeigeListe(int filter)
 {
     FILE *datei;
     char *zeile;
@@ -93,10 +93,22 @@ int zeigeListe()
     while (zeile != NULL)
     {
         zeilenNummer++;
-        printf("%d: %s\n", zeilenNummer, zeile);
+        if (filter == 0)
+        {
+            printf("%d: %s\n", zeilenNummer, zeile);
+        }
+        else if (filter == 1 && strncmp(zeile, "[ERLEDIGT] ", 11) != 0)
+        {
+            printf("%d: %s\n", zeilenNummer, zeile);
+        }
+        else if (filter == 2 && strncmp(zeile, "[ERLEDIGT] ", 11) == 0)
+        {
+            printf("%d: %s\n", zeilenNummer, zeile);
+        }
         free(zeile);
         zeile = leseZeile(datei);
     }
+
     fclose(datei);
     return 1;
 }
@@ -145,7 +157,7 @@ int loescheItem(long itemNummer)
     if (gefunden == 0)
     {
         remove("temp.txt");
-        printf("Item %ld existiert nicht!\n", itemNummer);
+        printf("Item %ld existiert nicht !\n", itemNummer);
         return 0;
     }
     remove("todo.txt");
@@ -270,7 +282,7 @@ int aendereText(long itemNummer, char *neuerText)
     if (gefunden == 0)
     {
         remove("temp.txt");
-        printf("Item %ld existiert nicht!\n", itemNummer);
+        printf("Item %ld existiert nicht !\n", itemNummer);
         return 0;
     }
     remove("todo.txt");
@@ -283,8 +295,10 @@ int main(int argc, char *argv[])
 {
     int options;
     long itemNummer;
+    int filter = 0;
+    int listeAnzeigen = 0;
     FILE *datei;
-    while ((options = getopt(argc, argv, ":hla:d:c:u:e:")) != -1)
+    while ((options = getopt(argc, argv, ":hla:d:c:u:e:UC")) != -1)
     {
 
         switch (options)
@@ -306,7 +320,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'l':
-            zeigeListe();
+            listeAnzeigen = 1;
             break;
 
         case 'a':
@@ -324,13 +338,13 @@ int main(int argc, char *argv[])
         case 'e':
             if (optind >= argc)
             {
-                printf("Item-Nummer fehlt!\n");
+                printf("Item-Nummer fehlt !\n");
                 break;
             }
 
             if (istGueltigeNummer(argv[optind], &itemNummer) == 0)
             {
-                printf("Ungültige Item-Nummer!\n");
+                printf("Ungültige Item-Nummer  !\n");
                 break;
             }
             aendereText(itemNummer, optarg);
@@ -366,8 +380,19 @@ int main(int argc, char *argv[])
 
             aendereStatus(itemNummer, 0);
             break;
-        }
 
-        return 0;
+        case 'U':
+            filter = 1;
+            break;
+
+        case 'C':
+            filter = 2;
+            break;
+        }
     }
+    if (listeAnzeigen == 1)
+    {
+        zeigeListe(filter);
+    }
+    return 0;
 }
