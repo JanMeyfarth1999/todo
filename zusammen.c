@@ -323,12 +323,12 @@ int main(int argc, char *argv[])
         case 'h':
             printf("-l = Listet alle Items Nummeriert auf.\n"
                    "-a = Fügt ein neues Item mit dem angegebenen Text hinzu.\n"
-                   "-e = Ersetzt den Text von einem Item mit Nr... durch einen neuen Text\n"
+                   "-e = Ersetzt den Text von einem Item mit Nr... durch einen neuen Text.\n"
                    "-d = Löscht das Item mit einer eingebenen Nr...\n"
-                   "-c = Markiert ein Item mit eingebener Nr... als [ERLEDIGT]\n"
+                   "-c = Markiert ein Item mit eingebener Nr... als [ERLEDIGT].\n"
                    "-u = Entfernt die Markierung [ERLEDIGT] wieder bei einem Item mit eingegebener Nr...\n"
-                   "-U = Zeigt zusammen mit -l (-l -U) nicht erledigte Items\n"
-                   "-C = Zeigt zusammen mit -l (-l -C) erledigte Items\n" 
+                   "-U = Zeigt zusammen mit -l (-l -U) nicht erledigte Items.\n"
+                   "-C = Zeigt zusammen mit -l (-l -C) erledigte Items.\n" 
                   );
             break;
 
