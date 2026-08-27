@@ -33,7 +33,7 @@ char *leseZeile(FILE *datei)
         return NULL;
     }
     zeichen = fgetc(datei);
-    if (zeichen == EOF)
+    if (zeichen == EOF)  
     {
         free(zeile);
         return NULL;
