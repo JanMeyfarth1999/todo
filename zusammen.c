@@ -267,6 +267,16 @@ int aendereText(long itemNummer, char *neuerText)
     }
     fclose(datei);
     fclose(tempDatei);
+    if (gefunden == 0)
+    {
+        remove("temp.txt");
+        printf("Item %ld existiert nicht!\n", itemNummer);
+        return 0;
+    }
+    remove("todo.txt");
+    rename("temp.txt", "todo.txt");
+    printf("Item %ld wurde geändert !\n", itemNummer);
+    return 1;
 }
 
 int main(int argc, char *argv[])
@@ -323,6 +333,8 @@ int main(int argc, char *argv[])
                 printf("Ungültige Item-Nummer!\n");
                 break;
             }
+            aendereText(itemNummer, optarg);
+            break;
 
         case 'd':
             if (istGueltigeNummer(optarg, &itemNummer) == 0)
