@@ -290,7 +290,6 @@ int aendereText(long itemNummer, char *neuerText)
     printf("Item %ld wurde geändert !\n", itemNummer);
     return 1;
 }
-
 int main(int argc, char *argv[])
 {
     int options;
@@ -298,11 +297,17 @@ int main(int argc, char *argv[])
     int filter = 0;
     int listeAnzeigen = 0;
     FILE *datei;
+
+    if (argc == 1)
+    {
+        printf("Gebe '-h' ein um die Befehle für die Todo-Liste abzurufen\n");
+    }
+
     while ((options = getopt(argc, argv, ":hla:d:c:u:e:UC")) != -1)
     {
-
         switch (options)
         {
+
         default:
             printf("Ungültiger Itembefehl\n");
             break;
@@ -316,7 +321,15 @@ int main(int argc, char *argv[])
             break;
 
         case 'h':
-            printf("Hilfe wurde abgerufen !\n");
+            printf("-l = Listet alle Items Nummeriert auf.\n"
+                   "-a = Fügt ein neues Item mit dem angegebenen Text hinzu.\n"
+                   "-e = Ersetzt den Text von einem Item mit Nr... durch einen neuen Text\n"
+                   "-d = Löscht das Item mit einer eingebenen Nr...\n"
+                   "-c = Markiert ein Item mit eingebener Nr... als [ERLEDIGT]\n"
+                   "-u = Entfernt die Markierung [ERLEDIGT] wieder bei einem Item mit eingegebener Nr...\n"
+                   "-U = Zeigt zusammen mit -l (-l -U) nicht erledigte Items\n"
+                   "-C = Zeigt zusammen mit -l (-l -C) erledigte Items\n" 
+                  );
             break;
 
         case 'l':
